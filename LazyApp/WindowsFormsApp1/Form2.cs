@@ -35,6 +35,8 @@ namespace WindowsFormsApp1
         public Form2(Bitmap img, string def)
         {
             InitializeComponent();
+            Form1 mainFF = (Form1)Application.OpenForms[0];
+            mainFF.Invoke(new Action(() => { mainFF.timer1.Enabled = false; }));
             this.def = def;
             actHook.OnMouseActivity += (s, e) =>
             {
@@ -63,6 +65,7 @@ namespace WindowsFormsApp1
             };
             actHook.Stop();
             defParts = new List<Bitmap>(Operations.ImageDivision(img));
+
         }
         private void Form2_Load(object sender, EventArgs e)
         {
@@ -206,6 +209,12 @@ namespace WindowsFormsApp1
             b.Width = 150;
             b.BackColor = Color.LemonChiffon;
             Controls.Add(b);
+        }
+
+        private void Form2_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Form1 mainFF = (Form1)Application.OpenForms[0];
+            mainFF.Invoke(new Action(() => { mainFF.timer1.Enabled = true; }));
         }
     }
 }

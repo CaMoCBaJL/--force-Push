@@ -22,43 +22,73 @@ namespace WindowsFormsApp1
         /// </para>
         /// </summary>
         /// <param name="img"></param>
-        public async static void CharacterRecognition(Bitmap img)
+        public static void CharacterRecognition(Bitmap img)
         {
             var results = new List<string>();
             string text = "";
-            await (Task.Run(() =>
-            {
+
             using (var e = new TesseractEngine("./AppData/tessdata", "rus"))
             {
                 text = e.Process(img).GetText();
             }
-                text = text.Replace('(', ' ').Replace(')', ' ').Replace('\n', ' ').Replace('[', ' ').Replace(
-                    ']', ' ').Replace('^', ' ').Replace('{', ' ').Replace('}', ' ').ToLower(); //Подготовка строки к матчу Regex-ом.
-                GC.Collect();
-                using (StreamReader defFile = new StreamReader("./AppData/Definitions_Words/Definitions.txt"))
-                {
-                    foreach (string def in defFile.ReadToEnd().Split(' ', '\n'))
-                        if (!string.IsNullOrEmpty(def) | !string.IsNullOrWhiteSpace(def))
-                            if (new Regex(def.Substring(0, def.Length - 1)).IsMatch(text))
-                                results.Add(def.Substring(0, def.Length - 1));
-                }   
-            }));
+            GC.Collect();
+            text = text.Replace('(', ' ').Replace(')', ' ').Replace('\n', ' ').Replace('[', ' ').Replace(
+                ']', ' ').Replace('^', ' ').Replace('{', ' ').Replace('}', ' ').ToLower(); //Подготовка строки к матчу Regex-ом.
+            using (StreamReader defFile = new StreamReader("./AppData/Definitions_Words/Definitions.txt"))
+            {
+                foreach (string def in defFile.ReadToEnd().Split(' ', '\n'))
+                    if (!string.IsNullOrEmpty(def) | !string.IsNullOrWhiteSpace(def))
+                        if (new Regex(def.Substring(0, def.Length)).IsMatch(text))
+                            results.Add(def.Substring(0, def.Length));
+            }
             if (!string.IsNullOrEmpty(text) & !string.IsNullOrWhiteSpace(text))
                 if (results.Count > 1)
                 {
                     try
                     {
-                        new Form3(results[0], new Point(Cursor.Position.X + 40, Cursor.Position.Y + 40)).Show();
                         Image cheatPic1 = Image.FromFile("./AppData/Definitions_Images/" + results[0] + ".png");
                         Image cheatPic2 = Image.FromFile("./AppData/Definitions_Images/" + results[1] + ".png");
-                        if (cheatPic2.Height + 40 + Cursor.Position.Y > Screen.PrimaryScreen.Bounds.Height)
-                            if (cheatPic2.Width + 40 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
-                                new Form3(results[1], new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic2.Width - 40,
-                                    Screen.PrimaryScreen.Bounds.Height - 40 - cheatPic2.Height)).Show();
+                        Point pic1Pos;
+                        Point pic2Pos;
+                        if (Cursor.Position.Y - cheatPic1.Height - 30 < 30)
+                            if (Cursor.Position.X - cheatPic1.Width - 30 < 30)
+                                pic1Pos = new Point(30, 30);
                             else
-                                new Form3(results[1], new Point(Cursor.Position.X - 40, Screen.PrimaryScreen.Bounds.Height - 40 - cheatPic2.Height)).Show();
+                                pic1Pos = new Point(Cursor.Position.X - 30, 30);
+                        else if (Cursor.Position.X - cheatPic1.Width - 30 < 30) 
+                            if (Cursor.Position.Y - cheatPic1.Height - 30 < 30)
+                                pic1Pos = new Point(30, 30);
+                            else
+                                pic1Pos = new Point(Cursor.Position.X - 30, 30);
+                        else if (cheatPic1.Height + 30 + Cursor.Position.Y > Screen.PrimaryScreen.Bounds.Height)
+                            if (cheatPic1.Width + 30 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
+                                pic1Pos = new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic1.Width + 30, Screen.PrimaryScreen.Bounds.Height + 30 - cheatPic1.Height);
+                            else
+                                pic1Pos = new Point(Cursor.Position.X + 30, Screen.PrimaryScreen.Bounds.Height + 30 - cheatPic1.Height);
                         else
-                            new Form3(results[1], new Point(Cursor.Position.X - 40 - cheatPic2.Width, Cursor.Position.Y - 40 - cheatPic2.Height)).Show();
+                            pic1Pos = new Point(Cursor.Position.X + 30 - cheatPic1.Width, Cursor.Position.Y + 30 - cheatPic1.Height);
+
+                        new Form3(results[0], pic1Pos).Show();
+
+                        if (Cursor.Position.Y - cheatPic2.Height - 30 < 30)
+                            if (Cursor.Position.X - cheatPic2.Width - 30 < 30)
+                                pic2Pos = new Point(40 + cheatPic1.Width, 30);
+                            else
+                                pic2Pos = new Point(Cursor.Position.X + cheatPic1.Width, 30);
+                        else if (Cursor.Position.X - cheatPic2.Width - 30 < 30) 
+                            if (Cursor.Position.Y - cheatPic2.Height - 30 < 30)
+                                pic2Pos = new Point(40 + cheatPic1.Width, 30);
+                            else
+                                pic2Pos = new Point(Cursor.Position.X + cheatPic1.Width, 30);
+                        else if (cheatPic2.Height + 30 + pic1Pos.Y + cheatPic1.Width > Screen.PrimaryScreen.Bounds.Height)
+                            if (cheatPic2.Width + 30 + pic1Pos.Y + cheatPic1.Width > Screen.PrimaryScreen.Bounds.Width)
+                                pic2Pos = new Point(pic1Pos.X + cheatPic1.Width - cheatPic2.Width + 30, pic1Pos.Y + cheatPic1.Height + 30 + cheatPic2.Height);
+                            else
+                                pic2Pos = new Point(pic1Pos.X + cheatPic1.Width - cheatPic2.Width + 30, pic1Pos.Y + cheatPic1.Height + 30 + cheatPic2.Height);
+                        else
+                            pic2Pos = new Point(pic1Pos.X + cheatPic1.Width + 30 - cheatPic2.Width, pic1Pos.Y + cheatPic1.Height + 30 - cheatPic2.Height);
+
+                        new Form3(results[1], pic2Pos).Show();
                     }
                     catch (Exception ex)
                     {
@@ -70,20 +100,20 @@ namespace WindowsFormsApp1
                     try
                     {
                         Image cheatPic1 = Image.FromFile("./AppData/Definitions_Images/" + results[0] + ".png");
-                        if (cheatPic1.Height + 40 + Cursor.Position.Y > Screen.PrimaryScreen.Bounds.Height)
-                            if (cheatPic1.Width + 40 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
-                                new Form3(results[0], new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic1.Width - 40,
-                                    Screen.PrimaryScreen.Bounds.Height - 40 - cheatPic1.Height)).Show();
+                        if (cheatPic1.Height + 30 + Cursor.Position.Y > Screen.PrimaryScreen.Bounds.Height)
+                            if (cheatPic1.Width + 30 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
+                                new Form3(results[0], new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic1.Width - 30,
+                                    Screen.PrimaryScreen.Bounds.Height - 30 - cheatPic1.Height)).Show();
                             else
-                                new Form3(results[0], new Point(Cursor.Position.X + 40, Screen.PrimaryScreen.Bounds.Height - 40 - cheatPic1.Height)).Show();
+                                new Form3(results[0], new Point(Cursor.Position.X + 30, Screen.PrimaryScreen.Bounds.Height - 30 - cheatPic1.Height)).Show();
                         else
-                            if (cheatPic1.Width + 40 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
-                            new Form3(results[0], new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic1.Width - 40,
-                                Cursor.Position.Y + 40)).Show();
+                            if (cheatPic1.Width + 30 + Cursor.Position.X > Screen.PrimaryScreen.Bounds.Width)
+                            new Form3(results[0], new Point(Screen.PrimaryScreen.Bounds.Width - cheatPic1.Width - 30,
+                                Cursor.Position.Y + 30)).Show();
                         else
-                            new Form3(results[0], new Point(Cursor.Position.X + 40, Cursor.Position.Y + 40)).Show();
+                            new Form3(results[0], new Point(Cursor.Position.X + 30, Cursor.Position.Y + 30)).Show();
 
-                        
+
                     }
                     catch (Exception ex)
                     {
@@ -91,7 +121,7 @@ namespace WindowsFormsApp1
                     }
 
                 }
-    }
+        }
         /// <summary>
         ///  Собираем кусочки картинки после их модификации в единое определение.
         /// </summary>
@@ -101,36 +131,26 @@ namespace WindowsFormsApp1
         /// <param name="resName"></param>
         public static void FinalDefinition(List<Bitmap> parts, int heigth, int width, string resName)
         {
-           new Task(() =>
-           {
-               Bitmap result = new Bitmap(width, heigth);
-               int c = 0;
-               foreach (Bitmap part in parts)
-               {
-                   Graphics g = Graphics.FromImage(result);
-                   g.DrawImage(part, new Point(0, c));
-                   c += part.Height;
-               }
-               parts.ForEach(part => part.Dispose());
-               System.Windows.Forms.Timer t = null;
-               foreach (Form f in Application.OpenForms)
-               {
-                   if (typeof(Form2) == f.GetType())
-                       f.Invoke(new Action(() => { f.Close(); }));
-                   break;
-               }
-               Thread.Sleep(2000);
-               if (File.Exists("./AppData/Definitions_Images/" + resName + ".png"))
-                   using (FileStream reWrite = new FileStream("./AppData/Definitions_Images/" + resName + ".png", FileMode.Truncate))
-                   using (Bitmap resCopy = (Bitmap)result.Clone())
-                       resCopy.Save(reWrite, System.Drawing.Imaging.ImageFormat.Png);
-               else
-                   using (FileStream reWrite = new FileStream("./AppData/Definitions_Images/" + resName + ".png", FileMode.Create))
-                   using (Bitmap resCopy = (Bitmap)result.Clone())
-                       resCopy.Save(reWrite, System.Drawing.Imaging.ImageFormat.Png);
-               if (t != null)
-                   t.Enabled = true;
-           }).Start();
+            Bitmap result = new Bitmap(width, heigth);
+            int c = 0;
+            foreach (Bitmap part in parts)
+            {
+                Graphics g = Graphics.FromImage(result);
+                g.DrawImage(part, new Point(0, c));
+                c += part.Height;
+            }
+            parts.ForEach(part => part.Dispose());
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            if (File.Exists("./AppData/Definitions_Images/" + resName + ".png"))
+                using (FileStream reWrite = new FileStream("./AppData/Definitions_Images/" + resName + ".png", FileMode.Truncate))
+                using (Bitmap resCopy = (Bitmap)result.Clone())
+                    resCopy.Save(reWrite, System.Drawing.Imaging.ImageFormat.Png);
+            else
+                using (FileStream reWrite = new FileStream("./AppData/Definitions_Images/" + resName + ".png", FileMode.Create))
+                using (Bitmap resCopy = (Bitmap)result.Clone())
+                    resCopy.Save(reWrite, System.Drawing.Imaging.ImageFormat.Png);
+
         }
         /// <summary>
         /// Разбираю картинку на отдельные строки.

@@ -22,7 +22,7 @@ namespace WindowsFormsApp1
             if (!File.Exists("./AppData/Definitions_Words/Definitions.txt"))
             {
                 File.Create("./AppData/Definitions_Words/Definitions.txt");
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
             }
             using (StreamReader reader = new StreamReader("./AppData/Definitions_Words/Definitions.txt"))
             {
@@ -49,18 +49,20 @@ namespace WindowsFormsApp1
                 defDel.Location = new Point(lDef.Width + 40, lDef.Location.Y);
                 defDel.Click += (s, a) =>
                 {
-                    if (MessageBox.Show("Удалить определениe?", "Удаление", MessageBoxButtons.OKCancel) == DialogResult.OK)
-                    {
-                        definitions.Remove(def);
-                        StringBuilder result = new StringBuilder();
-                        definitions.ForEach(elem => result.Append(elem+ "\n"));
-                        using (StreamWriter writer = new StreamWriter("./AppData/Definitions_Words/Definitions.txt"))
-                            writer.Write(result.ToString());
-                        FileInfo delPic = new FileInfo("./AppData/Definitions_Images/" + def + ".png");
+                        if (MessageBox.Show("Удалить определениe?", "Удаление", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                        {
+                            definitions.Remove(def);
+                            StringBuilder result = new StringBuilder();
+                            definitions.ForEach(elem => result.Append(elem + "\n"));
+                            FileInfo delPic = new FileInfo("./AppData/Definitions_Images/" + def + ".png");
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
                         delPic.Delete();
-                        this.Close();
-                        new Form4().Show();
-                    }
+                            using (StreamWriter writer = new StreamWriter("./AppData/Definitions_Words/Definitions.txt"))
+                                writer.Write(result.ToString());
+                            this.Close();
+                            new Form4().Show();
+                        }
                 };
                 Controls.Add(lDef);
                 Controls.Add(defDel);
