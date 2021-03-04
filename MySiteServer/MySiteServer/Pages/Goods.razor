@@ -1,7 +1,5 @@
 ﻿@inject MySiteServer.Data.Repository.IRepository repository;
 
-
-
 @page "/goods"
 <h3>Goods</h3>
     @foreach (var item in goods)
@@ -12,7 +10,7 @@
                     <div>
                         <p>
                             Айди - @item.GoodId, Товар - @item.GoodName, Цена - @item.GoodPrice, Производитель - @item.GoodProducerId, Кол-во на складе - @item.GoodStackAmount
-                            <h1><img src=@item.PathToGoodPicture /> </h1>
+                            <h1><img src="~/css/Images/@item.PathToGoodPicture"  /> </h1>
                         </p>
                     </div>
                 </td>

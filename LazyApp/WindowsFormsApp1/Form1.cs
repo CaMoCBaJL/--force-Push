@@ -15,20 +15,18 @@ using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using gma.System.Windows;
 using System.IO;
+using System.Windows;
+using Microsoft.Win32;
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        [DllImport("user32.dll")]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetCursorPos(out Point lpPoint);
         public static Bitmap PrintScreen(Point fP, Point sP)
         {
-            Bitmap printscreen = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            int c = (int)Registry.GetValue("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\Software\\Fonts", "LogPixels", 96);
+            Bitmap printscreen = new Bitmap((int)(Screen.PrimaryScreen.Bounds.Size.Width * (c / 96d)),
+                (int)(Screen.PrimaryScreen.Bounds.Size.Height * (c / 96d)));
             Graphics graphics = Graphics.FromImage(printscreen as Image);
             graphics.CopyFromScreen(0, 0, 0, 0, printscreen.Size);
             if (Math.Abs(fP.X - sP.X) < 5 || Math.Abs(fP.Y - sP.Y) < 5)
@@ -38,7 +36,8 @@ namespace WindowsFormsApp1
             }
             else
             {
-            return printscreen.Clone(new Rectangle(new Point(Math.Min(fP.X, sP.X), Math.Min(fP.Y, sP.Y)), new Size(Math.Abs(sP.X - fP.X), Math.Abs(sP.Y - fP.Y))), PixelFormat.Format32bppArgb);
+            return printscreen.Clone(new Rectangle(new Point(Math.Min(fP.X, sP.X), Math.Min(fP.Y, sP.Y)), 
+                new Size(Math.Abs(sP.X - fP.X), Math.Abs(sP.Y - fP.Y))), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             }
         }
 
@@ -50,7 +49,10 @@ namespace WindowsFormsApp1
         /// </param>
         public void PrintScreen(Point mcords)
         {
-            Bitmap printscreen = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            //int c = (int)Registry.GetValue("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\Software\\Fonts","LogPixels", 96);
+            //Bitmap printscreen = new Bitmap((int)(Screen.PrimaryScreen.Bounds.Size.Width * (c / 96d)), 
+            //    (int)(Screen.PrimaryScreen.Bounds.Size.Height * (c / 96d)));
+            Bitmap printscreen = new Bitmap(ScreenWidth, ScreenHeigth);
             Graphics graphics = Graphics.FromImage(printscreen as Image);
             graphics.CopyFromScreen(0, 0, 0, 0, printscreen.Size);
             Rectangle r = new Rectangle();
@@ -93,12 +95,12 @@ namespace WindowsFormsApp1
                             break;
                         }
                 }
-            else if (mcords.X > Screen.PrimaryScreen.Bounds.Width - 150 || mcords.Y > Screen.PrimaryScreen.Bounds.Height - 50)
-                switch (mcords.X + 150 > Screen.PrimaryScreen.Bounds.Width)
+            else if (mcords.X > ScreenWidth - 150 || mcords.Y > ScreenHeigth - 50)
+                switch (mcords.X + 150 > ScreenWidth)
                 {
                     case true:
                         {
-                            switch (mcords.Y + 50 > Screen.PrimaryScreen.Bounds.Height)
+                            switch (mcords.Y + 50 > ScreenHeigth)
                             {
                                 case true:
                                     {
@@ -115,7 +117,7 @@ namespace WindowsFormsApp1
                         }
                     case false:
                         {
-                            switch (mcords.Y + 50 > Screen.PrimaryScreen.Bounds.Height)
+                            switch (mcords.Y + 50 > ScreenHeigth)
                             {
                                 case true:
                                     {
@@ -133,13 +135,32 @@ namespace WindowsFormsApp1
                 }
             else
                 r = new Rectangle(mcords.X - 150, mcords.Y - 50, 300, 100);
-            Operations.CharacterRecognition(printscreen.Clone(r, PixelFormat.Format32bppArgb));
+            using (Bitmap b = (Bitmap)printscreen.Clone())
+                b.Save("Screen.jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            using (Bitmap b = printscreen.Clone(r, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            {
+                b.Save("Area.jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                Operations.CharacterRecognition(b);
+            }
         }
+
+        readonly double scallingCoefficent;
+
+        /// <summary>
+        /// Ширина экрана и высота зависят от масштабирования. Его цепляю по пути из регистра и ищу коэффицент масштабирования.
+        /// </summary>
+        readonly int ScreenWidth;
+
+        /// <summary>
+        /// Ширина экрана и высота зависят от масштабирования. Его цепляю по пути из регистра и ищу коэффицент масштабирования.
+        /// </summary>
+        readonly int ScreenHeigth;
         Point mousePos;
         Point firstCoords;
         Point secondCoords;
         UserActivityHook actHook = new UserActivityHook();
         bool fP = false;
+
         /// <summary>
         /// Таймер, проверяющий, поменялось ли расположение мыши на экране в течение секунды.
         /// </summary>
@@ -153,8 +174,10 @@ namespace WindowsFormsApp1
                     doesCheatExists = true;
             if (mousePos == Cursor.Position)
             {
-                if(!doesCheatExists)
-                PrintScreen(mousePos);
+                if (!doesCheatExists)
+                {
+                    PrintScreen(new Point((int)(Cursor.Position.X * scallingCoefficent), (int)(Cursor.Position.Y * scallingCoefficent)));
+                }
             }
             else
                 mousePos = Cursor.Position;
@@ -165,17 +188,25 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
+            //Инициализация констант
+            //--------------------------------------------------
+            scallingCoefficent = (double)(((int)Registry.GetValue(
+            "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\Software\\Fonts", "LogPixels", 96)) / 96d);
+            ScreenHeigth = (int)(scallingCoefficent * Screen.PrimaryScreen.Bounds.Height);
+            ScreenWidth = (int)(scallingCoefficent * Screen.PrimaryScreen.Bounds.Width);  
+            //---------------------------------------------------
             DirectoryInfo defDir = new DirectoryInfo("./AppData/Definitions_Words");
             if (!defDir.Exists)
                 defDir.Create();
             defDir = new DirectoryInfo("./AppData/Definitions_Images");
             if (!defDir.Exists)
                 defDir.Create();
-            contextMenuStrip1.Items.Add("О программе", null, (e, a) => { MessageBox.Show("Программа\"Lazy Reader\" предназначена для упрощения процесса чтения книг.\n" +
+            contextMenuStrip1.Items.Add("О программе", null, (e, a) => {MessageBox.Show(
+                "Программа\"Lazy Reader\" предназначена для упрощения процесса чтения книг.\n" +
                 "Разработана Ильей Шмелевым(Саратов). \n" + "Во вкладке \"Как пользоваться программой? \" можно найти гайд по программке) \n Жду отзывов и предложений) "); });
             contextMenuStrip1.Items.Add("Как пользоваться программой?", null, (e, a) => { new Form5().Show(); });
             contextMenuStrip1.Items.Add("Редактирование определений", null, (e, a) => { new Form4().Show(); });
-            contextMenuStrip1.Items.Add("Добавить слово", null, (e, a) => { MessageBox.Show("Выделите область экрана."); actHook.Start(); });
+            contextMenuStrip1.Items.Add("Добавить слово", null, (e, a) => {MessageBox.Show("Выделите область экрана."); actHook.Start(); });
             contextMenuStrip1.Items.Add("Выход", null, (e, a) => { Environment.Exit(0); });
             //Глобальный хук для отслеживания нажатия на кнопки мыши.
             actHook.OnMouseActivity += (s, e) =>

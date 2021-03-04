@@ -36,7 +36,7 @@ namespace WindowsFormsApp1
                 ']', ' ').Replace('^', ' ').Replace('{', ' ').Replace('}', ' ').ToLower(); //Подготовка строки к матчу Regex-ом.
             using (StreamReader defFile = new StreamReader("./AppData/Definitions_Words/Definitions.txt"))
             {
-                foreach (string def in defFile.ReadToEnd().Split(' ', '\n'))
+                foreach (string def in defFile.ReadToEnd().Split(' ', '\n', '\r'))
                     if (!string.IsNullOrEmpty(def) | !string.IsNullOrWhiteSpace(def))
                         if (new Regex(def.Substring(0, def.Length)).IsMatch(text))
                             results.Add(def.Substring(0, def.Length));
