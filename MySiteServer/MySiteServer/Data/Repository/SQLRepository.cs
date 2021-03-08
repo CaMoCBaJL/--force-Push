@@ -12,8 +12,7 @@ namespace MySiteServer.Data.Repository
         {
             this.context = context;
         }
-
-        public void AddPerfume(int goodId, string goodName, int producerId, int stackAmount, string pathToImg, int price)
+        public void AddPerfume(int goodId, string goodName, int producerId, int stackAmount, int price)
         {
             Good newPerfume = new Good()
             {
@@ -21,7 +20,6 @@ namespace MySiteServer.Data.Repository
                 GoodName = goodName,
                 GoodProducerId = producerId,
                 GoodStackAmount = stackAmount,
-                PathToGoodPicture = pathToImg,
                 GoodPrice = price
             };
 
@@ -39,7 +37,14 @@ namespace MySiteServer.Data.Repository
                 context.SaveChanges();
             }
         }
-
+        public IEnumerable<User> GetAllUsers()
+        {
+            return context.Users;
+        }
+        public IEnumerable<Producer> GetAllProducers()
+        {
+            return context.Producers;
+        }
         public IEnumerable<Good> GetAllGoods()
         {
             return context.Goods;
@@ -53,6 +58,14 @@ namespace MySiteServer.Data.Repository
             context.SaveChanges();
         }
 
+        public void AddUser(User user)
+        {
+            context.Add(user);
+        }
+        public void RememberUser(int id)
+        {
+            
+        }
     
     }
 }

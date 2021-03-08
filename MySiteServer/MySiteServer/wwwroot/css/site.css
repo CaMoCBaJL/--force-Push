@@ -8,6 +8,12 @@ a, .btn-link {
     color: #0366d6;
 }
 
+.user_cart_style{
+    height : 100px;
+    font-weight : 500;
+    line-height : 1.3px;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
