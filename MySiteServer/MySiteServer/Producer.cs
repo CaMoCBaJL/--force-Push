@@ -9,5 +9,6 @@ namespace MySiteServer
     {
         public int Id { get; set; }
         public string ProducerName { get; set; }
+        public string ProducerInfo { get; set; }
     }
 }

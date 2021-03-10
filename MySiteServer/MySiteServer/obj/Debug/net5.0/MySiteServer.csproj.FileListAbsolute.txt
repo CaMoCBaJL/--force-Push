@@ -48,10 +48,7 @@ C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\My
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\MySiteServer.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\MySiteServer.RazorComponent.input.cache
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\App.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\Counter.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\FetchData.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\Index.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\SurveyPrompt.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\_Imports.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\MainLayout.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\NavMenu.razor.g.cs
@@ -61,10 +58,7 @@ C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\My
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\MySiteServer.TagHelpers.output.cache
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\MySiteServer.RazorCoreGenerate.cache
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\App.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\Counter.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\FetchData.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\Index.razor.g.cs
-C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\SurveyPrompt.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\_Imports.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\MainLayout.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\NavMenu.razor.g.cs
@@ -92,3 +86,12 @@ C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\Hu
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\Autentification.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\Autentification.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\GoodInfo.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\GoodInfo.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\UserInfoPage.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\UserInfoPage.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\System.Drawing.Common.dll
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\ProducerInfo.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\ProducerInfo.razor.g.cs

@@ -90,7 +90,7 @@ using MySiteServer.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 38 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Shared\NavMenu.razor"
+#line 28 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Shared\NavMenu.razor"
        
     private bool collapseNavMenu = true;
 

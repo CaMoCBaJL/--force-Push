@@ -1,0 +1,56 @@
+﻿@page "/usr/{usrId}"
+@inject Data.Repository.IRepository repository;
+
+@users.ElementAt(int.Parse(usrId)).UserName Admin(@users.ElementAt(int.Parse(usrId)).IsAdmin)
+
+@if(!users.ElementAt(int.Parse(usrId)).IsAdmin)
+@if (string.IsNullOrEmpty(users.ElementAt(int.Parse(usrId)).UserCart))
+{
+    <h1> Корзина пуста</h1>
+}
+else
+{
+    <div class="user_cart_style">
+        <h2>Покупки:</h2>
+    </div>
+    foreach (var item in users.ElementAt(int.Parse(usrId)).UserCart.Split())
+    {
+        (int id, int count) goodInfo;
+        goodInfo.id = int.Parse(item.Split('*')[0]);
+        goodInfo.count = int.Parse(item.Split('*')[1]);
+
+        <p>
+            <div class=" user_cart_style">
+                <h3>
+                    @producers.ElementAt(goods.ElementAt(goodInfo.id).GoodProducerId - 1).ProducerName - @goods.ElementAt(goodInfo.id).GoodName x @goodInfo.count |
+                    <b> @(FinalPrice(goods.ElementAt(goodInfo.id).GoodPrice * goodInfo.count)) </b>
+                </h3>
+            </div>
+        </p>
+        <p></p>
+    }
+    <h1>
+        <b>  Итого: @sum </b>
+    </h1>
+}
+
+
+@code {
+    [Parameter] public string usrId { get; set; }
+    public IEnumerable<User> users = new List<User>();
+    public IEnumerable<Good> goods = new List<Good>();
+    public IEnumerable<Producer> producers = new List<Producer>();
+    private double sum;
+
+    protected override void OnInitialized()
+    {
+        users = repository.GetAllUsers();
+        producers = repository.GetAllProducers();
+        goods = repository.GetAllGoods();
+    }
+    private double FinalPrice(double newTerm)
+    {
+        sum += newTerm;
+        return newTerm;
+    }
+}

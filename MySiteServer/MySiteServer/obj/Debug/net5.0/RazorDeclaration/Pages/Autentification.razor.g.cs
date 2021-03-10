@@ -82,6 +82,13 @@ using MySiteServer.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 4 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
+using System.Text;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/aut")]
     public partial class Autentification : IndexBase
     {
@@ -91,61 +98,81 @@ using MySiteServer.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 58 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
-               
-            private IEnumerable<Producer> producers = new List<Producer>();
-            private IEnumerable<Good> goods = new List<Good>();
-            private IEnumerable<User> users = new List<User>();
-            public User user;
-            private int sum;
+#line 81 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
+       
+    private IEnumerable<Producer> producers = new List<Producer>();
+    private IEnumerable<Good> goods = new List<Good>();
+    private IEnumerable<User> users = new List<User>();
+    public User user;
+    private int sum;
 
-            public bool f;
-            public bool g;
-            public bool h;
+    public bool f;
+    public bool g;
+    public bool h;
 
-            protected override void OnInitialized()
+    protected override void OnInitialized()
+    {
+        producers = repository.GetAllProducers();
+        goods = repository.GetAllGoods();
+        users = repository.GetAllUsers();
+        user = new User();
+    }
+
+    protected void Delete_Click(string item, string goodName)
+    {
+        var collection = user.UserCart.Split().Cast<string>().ToList();
+        collection.Remove(item);
+        var newStr = new StringBuilder();
+        foreach (var elem in collection)
+        {
+            newStr.Append(elem + " ");
+        }
+        if (string.IsNullOrEmpty(newStr.ToString()))
+            user.UserCart = null;
+        else
+        {
+            newStr.Remove(newStr.Length - 1, 1);
+            user.UserCart = newStr.ToString();
+        }
+        repository.UserInfoChanged(user);
+
+    }
+
+
+    private int FinalPrice(int newTerm)
+    {
+        sum += newTerm;
+        return newTerm;
+    }
+
+    private void UserExit()
+    {
+        Service.userName = null;
+        Service.password = null;
+    }
+
+    private void ChangeLoginAndPassword()
+    {
+        if (Service.userName is not null && Service.password is not null)
+        {
+            user.UserName = Service.userName;
+            user.Passwrd = Service.password;
+        }
+    }
+    private bool UserExists()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
             {
-                producers = repository.GetAllProducers();
-                goods = repository.GetAllGoods();
-                users = repository.GetAllUsers();
-                user = new User();
-            }
-
-            private int FinalPrice(int newTerm)
-            {
-                sum += newTerm;
-                return newTerm;
-            }
-
-            private void UserExit()
-            {
-                Service.userName = null;
-                Service.password = null;
-            }
-
-            private void ChangeLoginAndPassword()
-            {
-                if (Service.userName is not null && Service.password is not null)
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
                 {
-                    user.UserName = Service.userName;
-                    user.Passwrd = Service.password;
+                    user = users.ElementAt(i);
+                    return true;
                 }
             }
-            private bool UserExists()
-            {
-                if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
-                    !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
-                    for (int i = 0; i < users.Count(); i++)
-                    {
-                        if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
-                        {
-                            user = users.ElementAt(i);
-                            return true;
-                        }
-                    }
-                return false;
-            }
-        
+        return false;
+    }
 
 #line default
 #line hidden

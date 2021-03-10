@@ -1,0 +1,36 @@
+﻿@page "/prodInfo/{prodId}"
+@inject Data.Repository.IRepository repository;
+
+<p>
+    Все товары производителя @producer.ProducerName
+    @for (int i = 0; i < goods.Count(); i++)
+    {
+        var j = i;
+    <h1>
+        @if (goods.ElementAt(j).GoodProducerId == int.Parse(prodId) + 1)
+        {
+        <a href="goodInfo/@j">
+            @goods.ElementAt(j).GoodName
+        </a>
+        }
+
+    </h1>
+    }
+    @producer.ProducerInfo
+    </p>
+
+    @code {
+        [Parameter] public string prodId { get; set; }
+        private IEnumerable<Good> goods = new List<Good>();
+        private Producer producer;
+        private List<string> imgFiles;
+        private List<uint> inputValues;
+
+        protected override void OnInitialized()
+        {
+            goods = repository.GetAllGoods();
+            producer = repository.GetAllProducers().Where(p => p.Id == int.Parse(prodId) + 1).First();
+            imgFiles = new List<string>();
+            
+        }
+    }

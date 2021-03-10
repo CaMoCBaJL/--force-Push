@@ -12,18 +12,10 @@ namespace MySiteServer.Data.Repository
         {
             this.context = context;
         }
-        public void AddPerfume(int goodId, string goodName, int producerId, int stackAmount, int price)
-        {
-            Good newPerfume = new Good()
-            {
-                GoodId = goodId,
-                GoodName = goodName,
-                GoodProducerId = producerId,
-                GoodStackAmount = stackAmount,
-                GoodPrice = price
-            };
 
-            context.Goods.Add(newPerfume);
+        public void AddGood(Good newGood)
+        {
+            context.Goods.Add(newGood);
             context.SaveChanges();
         }
 
@@ -50,6 +42,14 @@ namespace MySiteServer.Data.Repository
             return context.Goods;
         }
 
+        public void UserInfoChanged(User changedUser)
+        {
+            var item = context.Users.Attach(changedUser);
+            item.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            context.SaveChanges();
+        }
+
         public void GoodChanged(Good changedGood)
         {
             var item = context.Goods.Attach(changedGood);
@@ -61,11 +61,42 @@ namespace MySiteServer.Data.Repository
         public void AddUser(User user)
         {
             context.Add(user);
+            context.SaveChanges();
+
         }
-        public void RememberUser(int id)
+
+        public void AddProducer(Producer newProducer)
         {
-            
+            context.Add(newProducer);
+            context.SaveChanges();
+
         }
-    
+
+        public void ProducerInfoChanged(Producer producer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteProducer(int producerId)
+        {
+            var deletedProducer = context.Producers.Find(producerId);
+
+            if (deletedProducer != null)
+            {
+                context.Producers.Remove(deletedProducer);
+                context.SaveChanges();
+            }
+        }
+
+        public void DeleteUser(int userId)
+        {
+            var deletedUser = context.Users.Find(userId);
+
+            if (deletedUser != null)
+            {
+                context.Users.Remove(deletedUser);
+                context.SaveChanges();
+            }
+        }
     }
 }

@@ -49,9 +49,6 @@ namespace WindowsFormsApp1
         /// </param>
         public void PrintScreen(Point mcords)
         {
-            //int c = (int)Registry.GetValue("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\Software\\Fonts","LogPixels", 96);
-            //Bitmap printscreen = new Bitmap((int)(Screen.PrimaryScreen.Bounds.Size.Width * (c / 96d)), 
-            //    (int)(Screen.PrimaryScreen.Bounds.Size.Height * (c / 96d)));
             Bitmap printscreen = new Bitmap(ScreenWidth, ScreenHeigth);
             Graphics graphics = Graphics.FromImage(printscreen as Image);
             graphics.CopyFromScreen(0, 0, 0, 0, printscreen.Size);

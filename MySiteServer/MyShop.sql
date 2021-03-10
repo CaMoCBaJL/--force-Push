@@ -12,8 +12,10 @@ UserCart nvarchar(255)
 create table Producer
 (
 Id int identity(1,1) primary key,
-ProducerName nvarchar(255)
+ProducerName nvarchar(255),
+ProducerInfo text
 )
+drop table goods
 create table Goods
 (
 	GoodId int identity(1,1) primary key,
@@ -36,3 +38,10 @@ insert into Goods values ('Idole', 2, 300, 1200, 'Классные духи)')
 select * from Goods
 
 insert into UserInfo values ('Ivan', '123', 'BaH9)', 0, null)
+
+insert into UserInfo values ('Alena', '125', 'BaH9)', 1, null)
+
+select * from UserInfo
+
+update UserInfo
+set UserCart = null where UserId=1

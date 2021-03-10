@@ -83,8 +83,15 @@ using MySiteServer.Shared;
 #line hidden
 #nullable disable
 #nullable restore
-#line 3 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
+#line 4 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
 using System.Text;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 5 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
+using System.IO;
 
 #line default
 #line hidden
@@ -98,106 +105,119 @@ using System.Text;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 43 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
-           
-        private User user;
-        private IEnumerable<Good> goods = new List<Good>();
-        private IEnumerable<Producer> producers = new List<Producer>();
-        private List<uint> inputValues;
+#line 64 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
+       
+    private User user;
+    private IEnumerable<Good> goods = new List<Good>();
+    private IEnumerable<Producer> producers = new List<Producer>();
+    private List<uint> inputValues;
+    private List<string> imgFiles;
 
-        protected override void OnInitialized()
+    protected override void OnInitialized()
+    {
+        goods = repository.GetAllGoods();
+        producers = repository.GetAllProducers();
+        imgFiles = new List<string>();
+        foreach (var item in new DirectoryInfo("./wwwroot/Images").GetFiles())
         {
-            goods = repository.GetAllGoods();
-            producers = repository.GetAllProducers();
-            if (!string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.password))
-                foreach (User u in repository.GetAllUsers())
-                    if (u.L0gin == Service.userName && u.Passwrd == Service.password)
-                        user = u;
-            inputValues = new List<uint>();
-            for (int i = 0; i < goods.Count(); i++)
-            {
-                inputValues.Add(1);
-            }
+            imgFiles.Add(item.Name);
         }
-
-        private uint ShowGoodAmount(int goodNum)
+        if (!string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.password))
+            foreach (User u in repository.GetAllUsers())
+                if (u.L0gin == Service.userName && u.Passwrd == Service.password)
+                    user = u;
+        inputValues = new List<uint>();
+        for (int i = 0; i < goods.Count(); i++)
         {
-            if (user.UserCart != null)
-            {
-                uint result = 0;
-                foreach (var item in user.UserCart.Split())
-                {
-                    string s = goodNum.ToString() + "*";
-                    string c;
-                    if (item.Contains(s))
-                    {
-                        c = item.Substring(s.Length, item.Length - s.Length);
-                        uint.TryParse(c, out result);
-                        return result;
-                    }
-                }
-                return 0;
-            }
-            else
-                return 0;
+            inputValues.Add(1);
         }
+    }
 
-        private void RemoveGoodFromCart(int goodNum)
+
+    private uint ShowGoodAmount(int goodNum)
+    {
+        if (user.UserCart != null)
         {
-            if (!string.IsNullOrEmpty(user.UserCart))
-            {
-                string s = (goodNum.ToString() + '*').ToString();
-                if (user.UserCart.Contains(s))
-                {
-                    StringBuilder result = new StringBuilder();
-                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
-                    {
-                        if (str.Contains(s))
-                            str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) - inputValues[goodNum]).ToString();
-
-                        result.Append(str + " ");
-                    }));
-                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
-                }
-            }
-        }
-
-        private void AddGoodToCart(int goodNum)
-        {
-            if (!string.IsNullOrEmpty(user.UserCart))
+            uint result = 0;
+            foreach (var item in user.UserCart.Split())
             {
                 string s = goodNum.ToString() + "*";
-                if (user.UserCart.Contains(s))
+                string c;
+                if (item.Contains(s))
                 {
-                    StringBuilder result = new StringBuilder();
-                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
-                    {
-                        if (str.Contains(s))
-                            str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) + inputValues[goodNum]).ToString();
-
-                        result.Append(str + " ");
-                    }));
-                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                    c = item.Substring(s.Length, item.Length - s.Length);
+                    uint.TryParse(c, out result);
+                    return result;
                 }
-                else
-                    user.UserCart = (new StringBuilder(user.UserCart).Append(' ' + goodNum.ToString() + '*' + inputValues[goodNum])).ToString();
+            }
+            return 0;
+        }
+        else
+            return 0;
+    }
+
+    private void RemoveGoodFromCart(int goodNum)
+    {
+        if (!string.IsNullOrEmpty(user.UserCart))
+        {
+            string s = (goodNum.ToString() + '*').ToString();
+            if (user.UserCart.Contains(s))
+            {
+                StringBuilder result = new StringBuilder();
+                user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                {
+                    if (str.Contains(s))
+                    {
+                        int newValue = int.Parse(str.Substring(s.Length, str.Length - s.Length)) - (int)inputValues[goodNum];
+                        if (newValue > 0)
+                            str = str.Substring(0, s.Length) + newValue.ToString();
+                    }
+
+                    result.Append(str + " ");
+                }));
+                user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                repository.UserInfoChanged(user);
+            }
+        }
+    }
+
+    private void AddGoodToCart(int goodNum)
+    {
+        if (!string.IsNullOrEmpty(user.UserCart))
+        {
+            string s = goodNum.ToString() + "*";
+            if (user.UserCart.Contains(s))
+            {
+                StringBuilder result = new StringBuilder();
+                user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                {
+                    if (str.Contains(s))
+                        str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) + inputValues[goodNum]).ToString();
+
+                    result.Append(str + " ");
+                }));
+                user.UserCart = result.Remove(result.Length - 1, 1).ToString();
             }
             else
-                user.UserCart = (goodNum.ToString() + '*' + inputValues[goodNum]).ToString();
+                user.UserCart = (new StringBuilder(user.UserCart).Append(' ' + goodNum.ToString() + '*' + inputValues[goodNum])).ToString();
         }
+        else
+            user.UserCart = (goodNum.ToString() + '*' + inputValues[goodNum]).ToString();
+        repository.UserInfoChanged(user);
+    }
 
-        public string ImgNum(int i)
-        {
-            return i.ToString() + ".jpg";
-        }
+    public string ImgNum(int i)
+    {
+        return i.ToString() + ".jpg";
+    }
 
 
-    
 
 #line default
 #line hidden
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private MySiteServer.Data.Repository.IRepository repository { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager NavigationManager { get; set; }
     }
 }
 #pragma warning restore 1591

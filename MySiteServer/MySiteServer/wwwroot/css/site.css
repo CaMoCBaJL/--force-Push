@@ -8,16 +8,88 @@ a, .btn-link {
     color: #0366d6;
 }
 
-.user_cart_style{
-    height : 100px;
-    font-weight : 500;
-    line-height : 1.3px;
+.main_page{
+    font-family:'Times New Roman';
+    font-size:medium;
+    font-style:oblique;
+}
+
+.site_info {
+    position: relative;
+    top: 800px;
+    height: 100px;
+}
+
+.user_cart_style {
+    font-family: Palatino, URW Palladio L, serif;
+    font-weight: normal;
+    line-height:normal;
+    height:50px;
+}
+
+.button1 {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+.button1:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.button0 {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+.button0:hover {
+        background-color: #B22222;
+        color: white;
+}
+
+.admin_button {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+.admin_button:hover {
+    background-color: #8B008B;
+    color: white;
+}
+
+.add_buttons_style {
+    position: relative; /* Относительное позиционирование */
+    background: white; /* Цвет фона */
+    bottom: 10px;
 }
 
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+}
+
+.addCondition_0 {
+    height: 50px;
+    background-color: #f44336;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.addCondition_1 {
+    height: 50px;
+    background-color: #f44336;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.addCondition_2 {
+    height: 50px;
+    background-color: #4CAF50;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .content {

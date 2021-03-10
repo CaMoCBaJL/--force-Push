@@ -37,10 +37,7 @@ namespace MySiteServer
 
             services.AddScoped<IRepository, SQLRepository>();
 
-            services.AddSingleton<WeatherForecastService>();
-
             services.AddSingleton<SingleService>();
-
 
         }
 
