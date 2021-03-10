@@ -50,6 +50,10 @@ a, .btn-link {
         color: white;
 }
 
+.my_little_input{
+    width:50px;
+}
+
 .admin_button {
     border-radius: 8px;
     transition-duration: 0.4s;

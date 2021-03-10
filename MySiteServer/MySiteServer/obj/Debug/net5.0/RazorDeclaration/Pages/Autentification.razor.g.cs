@@ -98,7 +98,7 @@ using System.Text;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 81 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
+#line 82 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
        
     private IEnumerable<Producer> producers = new List<Producer>();
     private IEnumerable<Good> goods = new List<Good>();
@@ -116,6 +116,21 @@ using System.Text;
         goods = repository.GetAllGoods();
         users = repository.GetAllUsers();
         user = new User();
+        sum = 0;
+    }
+
+    void BuyItems()
+    {
+        (int goodId, int goodAmount) goodInfo;
+        foreach (var item in user.UserCart.Split())
+        {
+            goodInfo.goodId = int.Parse(item.Split('*')[0]);
+            goodInfo.goodAmount = int.Parse(item.Split('*')[1]);
+            goods.ElementAt(goodInfo.goodId).GoodStackAmount = goods.ElementAt(goodInfo.goodId).GoodStackAmount - goodInfo.goodAmount;
+            repository.GoodChanged(goods.ElementAt(goodInfo.goodId));
+        }
+        user.UserCart = null;
+        repository.UserInfoChanged(user);
     }
 
     protected void Delete_Click(string item, string goodName)
@@ -138,7 +153,6 @@ using System.Text;
 
     }
 
-
     private int FinalPrice(int newTerm)
     {
         sum += newTerm;
@@ -149,6 +163,7 @@ using System.Text;
     {
         Service.userName = null;
         Service.password = null;
+        sum = 0;
     }
 
     private void ChangeLoginAndPassword()
@@ -168,6 +183,7 @@ using System.Text;
                 if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
                 {
                     user = users.ElementAt(i);
+                    sum = 0;
                     return true;
                 }
             }

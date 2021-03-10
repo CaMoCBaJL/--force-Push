@@ -83,7 +83,7 @@ using MySiteServer.Shared;
 #line hidden
 #nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/prodInfo/{prodId}")]
-    public partial class ProducerInfo : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class ProducerInfo : IndexBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -91,22 +91,63 @@ using MySiteServer.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 22 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Shared\ProducerInfo.razor"
-           
-        [Parameter] public string prodId { get; set; }
-        private IEnumerable<Good> goods = new List<Good>();
-        private Producer producer;
-        private List<string> imgFiles;
-        private List<uint> inputValues;
+#line 52 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Shared\ProducerInfo.razor"
+       
+    [Parameter] public string prodId { get; set; }
+    IEnumerable<Good> goods = new List<Good>();
+    IEnumerable<User> users = new List<User>();
+    Producer producer;
+    List<string> imgFiles;
+    List<uint> inputValues;
+    User curUser;
+    string newProducerName;
+    string newProducerInfo;
 
-        protected override void OnInitialized()
+    protected override void OnInitialized()
+    {
+        users = repository.GetAllUsers();
+        goods = repository.GetAllGoods();
+        producer = repository.GetAllProducers().Where(p => p.Id == int.Parse(prodId) + 1).First();
+        imgFiles = new List<string>();
+        if (!string.IsNullOrEmpty(Service.password) && !string.IsNullOrWhiteSpace(Service.password) && !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.userName))
+            curUser = repository.GetAllUsers().Where(u => u.L0gin == Service.userName && u.Passwrd == Service.password).First();
+        newProducerName = producer.ProducerName;
+        newProducerInfo = producer.ProducerInfo;
+    }
+
+    void ChangeProducerName()
+    {
+        if (!string.IsNullOrEmpty(newProducerName) && !string.IsNullOrWhiteSpace(newProducerName))
         {
-            goods = repository.GetAllGoods();
-            producer = repository.GetAllProducers().Where(p => p.Id == int.Parse(prodId) + 1).First();
-            imgFiles = new List<string>();
-            
+            producer.ProducerName = newProducerName;
+            repository.ProducerInfoChanged(producer);
         }
-    
+    }
+
+    void ChangeProducerInfo()
+    {
+        if (!string.IsNullOrWhiteSpace(newProducerInfo) && !string.IsNullOrEmpty(newProducerInfo))
+        {
+            producer.ProducerInfo = newProducerInfo;
+            repository.ProducerInfoChanged(producer);
+        }
+    }
+
+    private bool UserExistsAndAdmin()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
+            {
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                {
+                    curUser = users.ElementAt(i);
+                    if(curUser.IsAdmin)
+                        return true;
+                }
+            }
+        return false;
+    }
 
 #line default
 #line hidden

@@ -105,113 +105,125 @@ using System.IO;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 64 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
-       
-    private User user;
-    private IEnumerable<Good> goods = new List<Good>();
-    private IEnumerable<Producer> producers = new List<Producer>();
-    private List<uint> inputValues;
-    private List<string> imgFiles;
+#line 70 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
+           
+        private User user;
+        private IEnumerable<Good> goods = new List<Good>();
+        private IEnumerable<Producer> producers = new List<Producer>();
+        private List<uint> inputValues;
+        private List<string> imgFiles;
+        bool canIAddTheGoods;
 
-    protected override void OnInitialized()
-    {
-        goods = repository.GetAllGoods();
-        producers = repository.GetAllProducers();
-        imgFiles = new List<string>();
-        foreach (var item in new DirectoryInfo("./wwwroot/Images").GetFiles())
+        protected override void OnInitialized()
         {
-            imgFiles.Add(item.Name);
-        }
-        if (!string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.password))
-            foreach (User u in repository.GetAllUsers())
-                if (u.L0gin == Service.userName && u.Passwrd == Service.password)
-                    user = u;
-        inputValues = new List<uint>();
-        for (int i = 0; i < goods.Count(); i++)
-        {
-            inputValues.Add(1);
-        }
-    }
-
-
-    private uint ShowGoodAmount(int goodNum)
-    {
-        if (user.UserCart != null)
-        {
-            uint result = 0;
-            foreach (var item in user.UserCart.Split())
+            goods = repository.GetAllGoods();
+            producers = repository.GetAllProducers();
+            imgFiles = new List<string>();
+            canIAddTheGoods = true;
+            foreach (var item in new DirectoryInfo("./wwwroot/Images").GetFiles())
             {
-                string s = goodNum.ToString() + "*";
-                string c;
-                if (item.Contains(s))
-                {
-                    c = item.Substring(s.Length, item.Length - s.Length);
-                    uint.TryParse(c, out result);
-                    return result;
-                }
+                imgFiles.Add(item.Name);
             }
-            return 0;
-        }
-        else
-            return 0;
-    }
-
-    private void RemoveGoodFromCart(int goodNum)
-    {
-        if (!string.IsNullOrEmpty(user.UserCart))
-        {
-            string s = (goodNum.ToString() + '*').ToString();
-            if (user.UserCart.Contains(s))
+            if (!string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.password))
+                foreach (User u in repository.GetAllUsers())
+                    if (u.L0gin == Service.userName && u.Passwrd == Service.password)
+                        user = u;
+            inputValues = new List<uint>();
+            for (int i = 0; i < goods.Count(); i++)
             {
-                StringBuilder result = new StringBuilder();
-                user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                inputValues.Add(1);
+            }
+        }
+
+
+        private uint ShowGoodAmount(int goodNum)
+        {
+            if (user.UserCart != null)
+            {
+                uint result = 0;
+                foreach (var item in user.UserCart.Split())
                 {
-                    if (str.Contains(s))
+                    string s = goodNum.ToString() + "*";
+                    string c;
+                    if (item.Contains(s))
                     {
-                        int newValue = int.Parse(str.Substring(s.Length, str.Length - s.Length)) - (int)inputValues[goodNum];
-                        if (newValue > 0)
-                            str = str.Substring(0, s.Length) + newValue.ToString();
+                        c = item.Substring(s.Length, item.Length - s.Length);
+                        uint.TryParse(c, out result);
+                        return result;
                     }
-
-                    result.Append(str + " ");
-                }));
-                user.UserCart = result.Remove(result.Length - 1, 1).ToString();
-                repository.UserInfoChanged(user);
-            }
-        }
-    }
-
-    private void AddGoodToCart(int goodNum)
-    {
-        if (!string.IsNullOrEmpty(user.UserCart))
-        {
-            string s = goodNum.ToString() + "*";
-            if (user.UserCart.Contains(s))
-            {
-                StringBuilder result = new StringBuilder();
-                user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
-                {
-                    if (str.Contains(s))
-                        str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) + inputValues[goodNum]).ToString();
-
-                    result.Append(str + " ");
-                }));
-                user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                }
+                return 0;
             }
             else
-                user.UserCart = (new StringBuilder(user.UserCart).Append(' ' + goodNum.ToString() + '*' + inputValues[goodNum])).ToString();
+                return 0;
         }
-        else
-            user.UserCart = (goodNum.ToString() + '*' + inputValues[goodNum]).ToString();
-        repository.UserInfoChanged(user);
-    }
 
-    public string ImgNum(int i)
-    {
-        return i.ToString() + ".jpg";
-    }
+        private void RemoveGoodFromCart(int goodNum)
+        {
+            if (!string.IsNullOrEmpty(user.UserCart))
+            {
+                string s = (goodNum.ToString() + '*').ToString();
+                if (user.UserCart.Contains(s))
+                {
+                    StringBuilder result = new StringBuilder();
+                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                    {
+                        if (str.Contains(s))
+                        {
+                            int newValue = int.Parse(str.Substring(s.Length, str.Length - s.Length)) - (int)inputValues[goodNum];
+                            if (newValue > 0)
+                                str = str.Substring(0, s.Length) + newValue.ToString();
+                        }
+
+                        result.Append(str + " ");
+                    }));
+                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                    repository.UserInfoChanged(user);
+                }
+            }
+        }
+
+        private void AddGoodToCart(int goodNum)
+        {
+            if (!string.IsNullOrEmpty(user.UserCart))
+            {
+                string s = goodNum.ToString() + "*";
+                if (user.UserCart.Contains(s))
+                {
+                    StringBuilder result = new StringBuilder();
+                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                    {
+                        if (str.Contains(s))
+                            if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] - int.Parse(str.Substring(s.Length, str.Length - s.Length)) >= 0)
+                                str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) + inputValues[goodNum]).ToString();
+                            else
+                                canIAddTheGoods = false;
+                        result.Append(str + " ");
+                    }));
+                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                }
+                else
+                    if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] >= 0)
+                    user.UserCart = (new StringBuilder(user.UserCart).Append(' ' + goodNum.ToString() + '*' + inputValues[goodNum])).ToString();
+                else
+                    canIAddTheGoods = false;
+
+            }
+            else
+                if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] >= 0)
+                user.UserCart = (goodNum.ToString() + '*' + inputValues[goodNum]).ToString();
+            else
+                canIAddTheGoods = false;
+            repository.UserInfoChanged(user);
+        }
+
+        public string ImgNum(int i)
+        {
+            return i.ToString() + ".jpg";
+        }
 
 
+    
 
 #line default
 #line hidden

@@ -74,7 +74,10 @@ namespace MySiteServer.Data.Repository
 
         public void ProducerInfoChanged(Producer producer)
         {
-            throw new NotImplementedException();
+            var item = context.Producers.Attach(producer);
+            item.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            context.SaveChanges();
         }
 
         public void DeleteProducer(int producerId)
