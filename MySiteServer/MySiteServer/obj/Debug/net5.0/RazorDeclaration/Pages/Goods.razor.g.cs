@@ -105,7 +105,7 @@ using System.IO;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 70 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
+#line 99 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Goods.razor"
            
         private User user;
         private IEnumerable<Good> goods = new List<Good>();
@@ -113,11 +113,17 @@ using System.IO;
         private List<uint> inputValues;
         private List<string> imgFiles;
         bool canIAddTheGoods;
+        (uint minPrice, uint maxPrice, List<string> brands) filters;
+        uint defaultMaxPrice = 0;
+        List<bool> isChecked;
 
         protected override void OnInitialized()
         {
             goods = repository.GetAllGoods();
+            if(defaultMaxPrice == 0)
+                goods.ToList().ForEach((good) => { if (good.GoodPrice > defaultMaxPrice) defaultMaxPrice = (uint)good.GoodPrice; });
             producers = repository.GetAllProducers();
+            ResetFilters();
             imgFiles = new List<string>();
             canIAddTheGoods = true;
             foreach (var item in new DirectoryInfo("./wwwroot/Images").GetFiles())
@@ -135,6 +141,10 @@ using System.IO;
             }
         }
 
+        bool IsChecked(string value)
+        {
+            return filters.brands.Contains(value);
+        }
 
         private uint ShowGoodAmount(int goodNum)
         {
@@ -222,7 +232,45 @@ using System.IO;
             return i.ToString() + ".jpg";
         }
 
+        void AddOrRemoveBrand(int index, string producerName)
+        {
+            if (filters.brands.Contains(producerName))
+            {
+                filters.brands.Remove(producerName);
+                isChecked[index] = false;
+            }
+            else
+            {
+                filters.brands.Add(producerName);
+                isChecked[index] = true;
+            } }
 
+        void SetMaxPrice(ChangeEventArgs args)
+        {
+            uint newMaxValue = uint.Parse(args.Value.ToString());
+            if (newMaxValue > 0 && newMaxValue < filters.maxPrice)
+                filters.maxPrice = newMaxValue;
+        }
+
+        void SetMinPrice(ChangeEventArgs args)
+        {
+            uint newMinValue = uint.Parse(args.Value.ToString());
+            if (newMinValue > 0 && newMinValue < filters.maxPrice)
+                filters.minPrice = newMinValue;
+        }
+
+        void ResetFilters()
+        {
+            filters.minPrice = 0;
+            filters.maxPrice = defaultMaxPrice;
+            filters.brands = new List<string>();
+            isChecked = new List<bool>();
+            foreach (var item in producers)
+            {
+                filters.brands.Add(item.ProducerName);
+                isChecked.Add(true);
+            }
+        }
     
 
 #line default

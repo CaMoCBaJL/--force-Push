@@ -1,6 +1,62 @@
 ﻿@page "/"
+@inject Data.Repository.IRepository repository;
+@inherits IndexBase;
+
     <div class="main_page">
         <p>
             Главная страница сайта Духи.ру
         </p>
+        @foreach (NewsItem item in news)
+        {
+    <h3>
+        <a href="news/@item.NewsItemId">
+            @item.NewsItemTitle
+        </a>
+        @item.ReleaseDateTime.ToString();
+    </h3>
+        }
+        @if(news.Count() == 0)
+        {
+            <h3>
+                Новостей пока нет.
+            </h3>
+        }
+        @if (UserExists())
+        {
+            if (curUser.IsAdmin)
+            {
+    <form action="/news/newNewsItem">
+        <button class="add_buttons_style">
+            Добавить новость
+        </button>
+    </form>
+            }
+        }
     </div>
+@code
+{
+    IEnumerable<User> users = new List<User>();
+    IEnumerable<NewsItem> news = new List<NewsItem>();
+    User curUser;
+
+    protected override void OnInitialized()
+    {
+        news = repository.GetAllNews();
+        users = repository.GetAllUsers();
+    }
+
+    private bool UserExists()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
+            {
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                {
+                    curUser = users.ElementAt(i);
+                    return true;
+                }
+            }
+        return false;
+    }
+}

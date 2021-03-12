@@ -82,15 +82,8 @@ using MySiteServer.Shared;
 #line default
 #line hidden
 #nullable disable
-#nullable restore
-#line 4 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
-using System.Text;
-
-#line default
-#line hidden
-#nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/aut")]
-    public partial class Autentification : IndexBase
+    [Microsoft.AspNetCore.Components.RouteAttribute("/reg/{usrId}")]
+    public partial class Registration : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -98,102 +91,89 @@ using System.Text;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 100 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
+#line 71 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Registration.razor"
        
-    private IEnumerable<Producer> producers = new List<Producer>();
-    private IEnumerable<Good> goods = new List<Good>();
-    private IEnumerable<User> users = new List<User>();
-    public User user;
-    private int sum;
-    bool registration;
-
-    public bool f;
-    public bool g;
-    public bool h;
+    [Parameter] public string usrId { get; set; }
+    string userName;
+    string login;
+    string password;
+    bool isAdmin;
+    byte regCondition;
 
     protected override void OnInitialized()
     {
-        producers = repository.GetAllProducers();
-        goods = repository.GetAllGoods();
-        users = repository.GetAllUsers();
-        user = new User();
-        sum = 0;
-    }
-
-    void Registration()
-    {
-        registration = true;
-    }
-
-    void BuyItems()
-    {
-        (int goodId, int goodAmount) goodInfo;
-        foreach (var item in user.UserCart.Split())
+        isAdmin = false;
+        regCondition = 255;
+        if(usrId != "addUser")
         {
-            goodInfo.goodId = int.Parse(item.Split('*')[0]);
-            goodInfo.goodAmount = int.Parse(item.Split('*')[1]);
-            goods.ElementAt(goodInfo.goodId).GoodStackAmount = goods.ElementAt(goodInfo.goodId).GoodStackAmount - goodInfo.goodAmount;
-            repository.GoodChanged(goods.ElementAt(goodInfo.goodId));
+            User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+            userName = user.UserName;
+            login = user.L0gin;
+            password = user.Passwrd;
         }
-        user.UserCart = null;
+    }
+
+    void IsAdmin(ChangeEventArgs args)
+    {
+        if (args.Value.ToString() == "admin" && !isAdmin)
+            isAdmin = true;
+    }
+
+    void ChangeUserName()
+    {
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
         repository.UserInfoChanged(user);
     }
 
-    protected void Delete_Click(string item, string goodName)
+    void ChangeLogin()
     {
-        var collection = user.UserCart.Split().Cast<string>().ToList();
-        collection.Remove(item);
-        var newStr = new StringBuilder();
-        foreach (var elem in collection)
+        foreach (var item in repository.GetAllUsers())
         {
-            newStr.Append(elem + " ");
+            if (item.L0gin == login && item.Passwrd == password)
+            {
+                regCondition = 1;
+                return;
+            }
         }
-        if (string.IsNullOrEmpty(newStr.ToString()))
-            user.UserCart = null;
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
+        repository.UserInfoChanged(user);
+    }
+
+    void ChangePassword()
+    {
+        foreach (var item in repository.GetAllUsers())
+        {
+            if (item.L0gin == login && item.Passwrd == password)
+            {
+                regCondition = 1;
+                return;
+            }
+        }
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
+        repository.UserInfoChanged(user);
+    }
+
+    void UserRegistration()
+    {
+        if (string.IsNullOrEmpty(userName) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(login) || string.IsNullOrWhiteSpace(login) ||
+            string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(password))
+            regCondition = 0;
         else
         {
-            newStr.Remove(newStr.Length - 1, 1);
-            user.UserCart = newStr.ToString();
-        }
-        repository.UserInfoChanged(user);
-
-    }
-
-    private int FinalPrice(int newTerm)
-    {
-        sum += newTerm;
-        return newTerm;
-    }
-
-    private void UserExit()
-    {
-        Service.userName = null;
-        Service.password = null;
-        sum = 0;
-    }
-
-    private void ChangeLoginAndPassword()
-    {
-        if (Service.userName is not null && Service.password is not null)
-        {
-            user.UserName = Service.userName;
-            user.Passwrd = Service.password;
-        }
-    }
-    private bool UserExists()
-    {
-        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
-            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
-            for (int i = 0; i < users.Count(); i++)
+            foreach (var item in repository.GetAllUsers())
             {
-                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                if (item.L0gin == login && item.Passwrd == password)
                 {
-                    user = users.ElementAt(i);
-                    sum = 0;
-                    return true;
+                    regCondition = 1;
+                    return;
                 }
             }
-        return false;
+            regCondition = 2;
+            repository.AddUser(new User() { L0gin = login, Passwrd = password, UserCart = null, IsAdmin = isAdmin, UserName = userName });
+        }
     }
 
 #line default

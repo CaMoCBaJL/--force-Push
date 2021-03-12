@@ -9,38 +9,55 @@
 @if (!UserExists())
 {
     <p>
-    <h3>Вход</h3>
-    Введите логин:
+        @if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+     !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+        {
+            <div class="addCondition_0">
+                Пользователь с такими данными не найден в базе.
+                <a href="reg" class="registration"> Регистрация </a>
+            </div>
+        }
+        <h3>Вход</h3>
+        Введите логин:
     <p><input @bind=@Service.userName /> </p>
     Введите пароль:
     <p><input @bind=@Service.password /> </p>
 
     <button @onclick=@ChangeLoginAndPassword> Вход </button>
+    <h6 align="rigth"><a href="reg/addUser" class="registration"> Регистрация </a></h6>
+
     </p>
 }
 
 else
 {
     <p>
-        <div class="user_cart_style">
-            <h1>Здравствуйте, @user.UserName! </h1>
-        </div>
+                <h1>
+                    <div class="user_cart_style">
+                            Здравствуйте, @user.UserName!
+                    </div>
+                </h1>
+                <h3>
+                    <form action="reg/@user.UserId">
+                        <button class="admin_button"> Редактировать информацию</button>
+                    </form>
+                </h3>
         @if (user.IsAdmin)
         {
-            <p>
-                @foreach (var item in users)
-                {
-                    
-                    <h6>
-                        <a href="usr/@(item.UserId - 1)">
-                            @item.UserName
-                        </a>
-                    </h6>
-                }
-            </p>
-        }
-        else
-        {
+        <p>
+            @foreach (var item in users)
+            {
+
+                <h6>
+                    <a href="usr/@(item.UserId - 1)">
+                        @item.UserName
+                    </a>
+                </h6>
+            }
+        </p>
+    }
+    else
+    {
         @if (string.IsNullOrEmpty(user.UserCart))
         {
             <h1> Корзина пуста</h1>
@@ -56,28 +73,29 @@ else
                 goodInfo.id = int.Parse(item.Split('*')[0]);
                 goodInfo.count = int.Parse(item.Split('*')[1]);
 
-            <p>
-                <div class=" user_cart_style">
-                <h3>
-                    @producers.ElementAt(goods.ElementAt(goodInfo.id).GoodProducerId - 1).ProducerName - @goods.ElementAt(goodInfo.id).GoodName x @goodInfo.count |
-                    <b> @(FinalPrice(goods.ElementAt(goodInfo.id).GoodPrice * goodInfo.count)) </b>
-                </h3>
-                </div>
+                <p>
+                    <div class=" user_cart_style">
+                        <h3>
+                            @producers.ElementAt(goods.ElementAt(goodInfo.id).GoodProducerId - 1).ProducerName - @goods.ElementAt(goodInfo.id).GoodName x @goodInfo.count |
+                            <b> @(FinalPrice(goods.ElementAt(goodInfo.id).GoodPrice * goodInfo.count)) </b>
+                        </h3>
+                    </div>
                     <button class="button0" @onclick="() => Delete_Click(item, goods.ElementAt(goodInfo.id).GoodName)"> Удалить предмет из корзины?</button>
-            </p>
-                    <p></p>
+                </p>
+                <p></p>
             }
-        <h1>
-            <b>  Итого: @sum </b>
-            <button class="button0" @onclick="BuyItems"> Купить</button>
-        </h1>
+            <h1>
+                <b>  Итого: @sum </b>
+                <button class="button0" @onclick="BuyItems"> Купить</button>
+            </h1>
         }
-        }
+    }
 
         <h3 align="rigth"><button class="button0" @onclick=@UserExit> Выход </button></h3>
+
         </p>
 
-}
+    }
 
 @code {
     private IEnumerable<Producer> producers = new List<Producer>();
@@ -85,6 +103,7 @@ else
     private IEnumerable<User> users = new List<User>();
     public User user;
     private int sum;
+    bool registration;
 
     public bool f;
     public bool g;
@@ -97,6 +116,11 @@ else
         users = repository.GetAllUsers();
         user = new User();
         sum = 0;
+    }
+
+    void Registration()
+    {
+        registration = true;
     }
 
     void BuyItems()

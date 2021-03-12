@@ -1,0 +1,154 @@
+﻿@page "/reg/{usrId}"
+@inject Data.Repository.IRepository repository;
+
+<p align="center">
+    @switch (regCondition)
+    {
+        case 0:
+            <div class="addCondition_0">
+                Введны не все данные!
+            </div>
+            break;
+        case 1:
+            <div class="addCondition_1">
+                Пользователь с таким паролем и логином уже имеется  в базе!
+            </div>
+            break;
+        case 2:
+            @if (usrId == null)
+            {
+                <div class="addCondition_2">
+                    Добавление прошло успешно!
+                </div>
+            }
+            else
+            {
+                <div class="addCondition_2">
+                    Изменение информации о пользователе прошло успешно!
+                </div>
+            }
+            break;
+    }
+</p>
+<h6 class="big_h">
+    Введите имя пользователя 
+    <input class="my_little_input_1" @bind="userName"/>
+    @if(usrId != "addUser")
+    {
+        <button class="button0" @onclick="ChangeUserName"> Изменить имя пользователя </button>
+    }
+</h6>
+<h6 class="big_h">
+    Введите логин для входа в учетную запись 
+    <input class="my_little_input_1" @bind="login" />
+    @if (usrId != "addUser")
+    {
+        <button class="button0" @onclick="ChangeLogin"> Изменить логин </button>
+    }
+</h6>
+<h6 class="big_h">
+    Введите пароль для входа в учетную запись 
+    <input class="my_little_input_1" @bind="password" />
+    @if (usrId != "addUser")
+    {
+        <button class="button0" @onclick="ChangePassword"> Изменить пароль </button>
+    }
+</h6>
+@if (usrId == "addUser")
+{
+<h6>
+    Введите пароль администратора (опционально) 
+    <input class="my_little_input_1" @onchange="(args) => IsAdmin(args)" />
+</h6>
+}
+<h6>
+    @if (usrId == "addUser")
+    {
+    <button class="button0" @onclick="UserRegistration"> Регистрация</button>
+    }
+</h6>
+
+@code {
+    [Parameter] public string usrId { get; set; }
+    string userName;
+    string login;
+    string password;
+    bool isAdmin;
+    byte regCondition;
+
+    protected override void OnInitialized()
+    {
+        isAdmin = false;
+        regCondition = 255;
+        if(usrId != "addUser")
+        {
+            User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+            userName = user.UserName;
+            login = user.L0gin;
+            password = user.Passwrd;
+        }
+    }
+
+    void IsAdmin(ChangeEventArgs args)
+    {
+        if (args.Value.ToString() == "admin" && !isAdmin)
+            isAdmin = true;
+    }
+
+    void ChangeUserName()
+    {
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
+        repository.UserInfoChanged(user);
+    }
+
+    void ChangeLogin()
+    {
+        foreach (var item in repository.GetAllUsers())
+        {
+            if (item.L0gin == login && item.Passwrd == password)
+            {
+                regCondition = 1;
+                return;
+            }
+        }
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
+        repository.UserInfoChanged(user);
+    }
+
+    void ChangePassword()
+    {
+        foreach (var item in repository.GetAllUsers())
+        {
+            if (item.L0gin == login && item.Passwrd == password)
+            {
+                regCondition = 1;
+                return;
+            }
+        }
+        User user = repository.GetAllUsers().Where(usr => usr.UserId == int.Parse(usrId)).First();
+        user.UserName = userName;
+        repository.UserInfoChanged(user);
+    }
+
+    void UserRegistration()
+    {
+        if (string.IsNullOrEmpty(userName) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(login) || string.IsNullOrWhiteSpace(login) ||
+            string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(password))
+            regCondition = 0;
+        else
+        {
+            foreach (var item in repository.GetAllUsers())
+            {
+                if (item.L0gin == login && item.Passwrd == password)
+                {
+                    regCondition = 1;
+                    return;
+                }
+            }
+            regCondition = 2;
+            repository.AddUser(new User() { L0gin = login, Passwrd = password, UserCart = null, IsAdmin = isAdmin, UserName = userName });
+        }
+    }
+}

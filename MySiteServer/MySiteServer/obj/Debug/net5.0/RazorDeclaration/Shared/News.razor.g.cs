@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace MySiteServer.Pages
+namespace MySiteServer.Shared
 {
     #line hidden
     using System;
@@ -82,15 +82,8 @@ using MySiteServer.Shared;
 #line default
 #line hidden
 #nullable disable
-#nullable restore
-#line 4 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
-using System.Text;
-
-#line default
-#line hidden
-#nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/aut")]
-    public partial class Autentification : IndexBase
+    [Microsoft.AspNetCore.Components.RouteAttribute("/news/{newsItemId}")]
+    public partial class News : IndexBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -98,88 +91,66 @@ using System.Text;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 100 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Autentification.razor"
+#line 87 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Shared\News.razor"
        
-    private IEnumerable<Producer> producers = new List<Producer>();
-    private IEnumerable<Good> goods = new List<Good>();
-    private IEnumerable<User> users = new List<User>();
-    public User user;
-    private int sum;
-    bool registration;
-
-    public bool f;
-    public bool g;
-    public bool h;
+    [Parameter] public string newsItemId { get; set; }
+    User curUser;
+    NewsItem curNewsItem;
+    IEnumerable<User> users = new List<User>();
+    string newNewsItemTitle;
+    string newNewsItemContent;
+    byte addNewsItemCondition = 255;
 
     protected override void OnInitialized()
     {
-        producers = repository.GetAllProducers();
-        goods = repository.GetAllGoods();
         users = repository.GetAllUsers();
-        user = new User();
-        sum = 0;
-    }
-
-    void Registration()
-    {
-        registration = true;
-    }
-
-    void BuyItems()
-    {
-        (int goodId, int goodAmount) goodInfo;
-        foreach (var item in user.UserCart.Split())
+        if (newsItemId == "newNewsItem")
         {
-            goodInfo.goodId = int.Parse(item.Split('*')[0]);
-            goodInfo.goodAmount = int.Parse(item.Split('*')[1]);
-            goods.ElementAt(goodInfo.goodId).GoodStackAmount = goods.ElementAt(goodInfo.goodId).GoodStackAmount - goodInfo.goodAmount;
-            repository.GoodChanged(goods.ElementAt(goodInfo.goodId));
+            newNewsItemTitle = string.Empty;
+            newNewsItemContent = "Текст новости отсутсвует.";
+            curNewsItem = new NewsItem()
+            {
+                NewsItemContent = newNewsItemContent,
+                NewsItemTitle = newNewsItemTitle,
+                ReleaseDateTime = DateTime.Now
+            };
         }
-        user.UserCart = null;
-        repository.UserInfoChanged(user);
-    }
-
-    protected void Delete_Click(string item, string goodName)
-    {
-        var collection = user.UserCart.Split().Cast<string>().ToList();
-        collection.Remove(item);
-        var newStr = new StringBuilder();
-        foreach (var elem in collection)
-        {
-            newStr.Append(elem + " ");
-        }
-        if (string.IsNullOrEmpty(newStr.ToString()))
-            user.UserCart = null;
         else
         {
-            newStr.Remove(newStr.Length - 1, 1);
-            user.UserCart = newStr.ToString();
+            curNewsItem = repository.GetAllNews().Where(n => n.NewsItemId == int.Parse(newsItemId)).First();
+            if (UserExists())
+                if (curUser.IsAdmin)
+                {
+                    newNewsItemTitle = curNewsItem.NewsItemTitle;
+                    newNewsItemContent = curNewsItem.NewsItemContent;
+                }
         }
-        repository.UserInfoChanged(user);
-
     }
 
-    private int FinalPrice(int newTerm)
+    void AddNewsItem()
     {
-        sum += newTerm;
-        return newTerm;
-    }
-
-    private void UserExit()
-    {
-        Service.userName = null;
-        Service.password = null;
-        sum = 0;
-    }
-
-    private void ChangeLoginAndPassword()
-    {
-        if (Service.userName is not null && Service.password is not null)
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle) || string.IsNullOrEmpty(newNewsItemContent) || string.IsNullOrWhiteSpace(newNewsItemContent) ||
+            newNewsItemContent == "Текст новости отсутсвует.")
         {
-            user.UserName = Service.userName;
-            user.Passwrd = Service.password;
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            foreach (var item in repository.GetAllNews())
+            {
+                if (item.NewsItemTitle == newNewsItemTitle)
+                {
+                    addNewsItemCondition = 1;
+                    return;
+                }
+            }
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemTitle = newNewsItemTitle;
+            curNewsItem.NewsItemContent = newNewsItemContent;
+            repository.AddNewsItem(curNewsItem);
         }
     }
+
     private bool UserExists()
     {
         if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
@@ -188,12 +159,47 @@ using System.Text;
             {
                 if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
                 {
-                    user = users.ElementAt(i);
-                    sum = 0;
+                    curUser = users.ElementAt(i);
                     return true;
                 }
             }
         return false;
+    }
+
+    void ChangeNewsItemTitle()
+    {
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle))
+        {
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            foreach (var item in repository.GetAllNews())
+            {
+                if (item.NewsItemTitle == newNewsItemTitle)
+                {
+                    addNewsItemCondition = 1;
+                    return;
+                }
+            }
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemTitle = newNewsItemTitle;
+            repository.ChangeNewsItem(curNewsItem);
+        }
+    }
+
+    void ChangeNewsItemContent()
+    {
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle))
+        {
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemContent = newNewsItemContent;
+            repository.ChangeNewsItem(curNewsItem);
+        }
     }
 
 #line default

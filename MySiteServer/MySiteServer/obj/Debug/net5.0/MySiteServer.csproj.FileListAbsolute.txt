@@ -95,3 +95,9 @@ C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\ru
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\bin\Debug\net5.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\ProducerInfo.razor.g.cs
 C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\ProducerInfo.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\Registration.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\Registration.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Pages\Contacts.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\RazorDeclaration\Shared\News.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Pages\Contacts.razor.g.cs
+C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\obj\Debug\net5.0\Razor\Shared\News.razor.g.cs

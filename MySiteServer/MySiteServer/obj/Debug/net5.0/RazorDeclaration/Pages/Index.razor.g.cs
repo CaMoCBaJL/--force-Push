@@ -83,13 +83,45 @@ using MySiteServer.Shared;
 #line hidden
 #nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/")]
-    public partial class Index : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class Index : IndexBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 37 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Index.razor"
+ 
+    IEnumerable<User> users = new List<User>();
+    IEnumerable<NewsItem> news = new List<NewsItem>();
+    User curUser;
+
+    protected override void OnInitialized()
+    {
+        news = repository.GetAllNews();
+        users = repository.GetAllUsers();
+    }
+
+    private bool UserExists()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
+            {
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                {
+                    curUser = users.ElementAt(i);
+                    return true;
+                }
+            }
+        return false;
+    }
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private Data.Repository.IRepository repository { get; set; }
     }
 }
 #pragma warning restore 1591

@@ -101,5 +101,24 @@ namespace MySiteServer.Data.Repository
                 context.SaveChanges();
             }
         }
+
+        public void ChangeNewsItem(NewsItem news)
+        {
+            var item = context.News.Attach(news);
+            item.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            context.SaveChanges();
+        }
+
+        public void AddNewsItem(NewsItem news)
+        {
+            context.Add(news);
+            context.SaveChanges();
+        }
+
+        public IEnumerable<NewsItem> GetAllNews()
+        {
+            return context.News;
+        }
     }
 }
