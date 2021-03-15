@@ -13,83 +13,115 @@ namespace MySiteServer.Pages
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
 #nullable restore
-#line 1 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 1 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using System.Net.Http;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 2 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 3 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 3 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Components.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 4 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 4 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Components.Forms;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 5 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 5 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Components.Routing;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 6 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 6 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Components.Web;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 7 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 7 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 8 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 8 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using Microsoft.JSInterop;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 9 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 9 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using MySiteServer;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
-#line 10 "C:\Users\gorka\OneDrive\Документы\Blazor_Tryouts\MySiteServer\MySiteServer\_Imports.razor"
+#line 10 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\_Imports.razor"
 using MySiteServer.Shared;
 
 #line default
 #line hidden
 #nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/")]
-    public partial class Index : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class Index : IndexBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
         {
         }
         #pragma warning restore 1998
+#nullable restore
+#line 37 "C:\Users\Анотон\source\repos\MySiteServer\MySiteServer\Pages\Index.razor"
+ 
+    IEnumerable<User> users = new List<User>();
+    IEnumerable<NewsItem> news = new List<NewsItem>();
+    User curUser;
+
+    protected override void OnInitialized()
+    {
+        news = repository.GetAllNews();
+        users = repository.GetAllUsers();
+    }
+
+    private bool UserExists()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
+            {
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                {
+                    curUser = users.ElementAt(i);
+                    return true;
+                }
+            }
+        return false;
+    }
+
+#line default
+#line hidden
+#nullable disable
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private Data.Repository.IRepository repository { get; set; }
     }
 }
 #pragma warning restore 1591

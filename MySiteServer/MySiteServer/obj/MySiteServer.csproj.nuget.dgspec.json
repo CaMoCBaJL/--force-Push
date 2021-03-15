@@ -1,21 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gorka\\OneDrive\\Документы\\Blazor_Tryouts\\MySiteServer\\MySiteServer\\MySiteServer.csproj": {}
+    "C:\\Users\\Анотон\\source\\repos\\MySiteServer\\MySiteServer\\MySiteServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gorka\\OneDrive\\Документы\\Blazor_Tryouts\\MySiteServer\\MySiteServer\\MySiteServer.csproj": {
+    "C:\\Users\\Анотон\\source\\repos\\MySiteServer\\MySiteServer\\MySiteServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gorka\\OneDrive\\Документы\\Blazor_Tryouts\\MySiteServer\\MySiteServer\\MySiteServer.csproj",
+        "projectUniqueName": "C:\\Users\\Анотон\\source\\repos\\MySiteServer\\MySiteServer\\MySiteServer.csproj",
         "projectName": "MySiteServer",
-        "projectPath": "C:\\Users\\gorka\\OneDrive\\Документы\\Blazor_Tryouts\\MySiteServer\\MySiteServer\\MySiteServer.csproj",
-        "packagesPath": "C:\\Users\\gorka\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gorka\\OneDrive\\Документы\\Blazor_Tryouts\\MySiteServer\\MySiteServer\\obj\\",
+        "projectPath": "C:\\Users\\Анотон\\source\\repos\\MySiteServer\\MySiteServer\\MySiteServer.csproj",
+        "packagesPath": "C:\\Users\\Анотон\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Анотон\\source\\repos\\MySiteServer\\MySiteServer\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\gorka\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Анотон\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
@@ -49,6 +54,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[5.0.3, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[5.0.2, )"
             }
           },
           "imports": [
@@ -69,7 +78,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.104\\RuntimeIdentifierGraph.json"
         }
       }
     }

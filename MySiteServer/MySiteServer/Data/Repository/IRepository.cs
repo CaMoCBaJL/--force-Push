@@ -7,9 +7,20 @@ namespace MySiteServer.Data.Repository
 {
     public interface IRepository
     {
-        IEnumerable<Good> GetAllGoods();
-        void AddPerfume(int goodId, string goodName, int producerId, int stackAmount, string pathToImg, int price);
+        void ChangeNewsItem(NewsItem news);
+        void AddNewsItem(NewsItem news);
+        IEnumerable<NewsItem> GetAllNews();
+        void AddProducer(Producer producer);
+        void ProducerInfoChanged(Producer producer);
+        void DeleteProducer(int producerId);
+        IEnumerable<Producer> GetAllProducers();
+        void AddUser(User user);
+        void UserInfoChanged(User changedUser);
+        void DeleteUser(int userId);
+        IEnumerable<User> GetAllUsers();
+        void AddGood(Good newGood);
         void GoodChanged(Good changedGood);
         void DeleteGood(int goodId);
+        IEnumerable<Good> GetAllGoods();
     }
 }

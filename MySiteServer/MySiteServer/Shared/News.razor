@@ -1,0 +1,196 @@
+﻿@page "/news/{newsItemId}"
+@inject Data.Repository.IRepository repository;
+@inherits IndexBase;
+
+@switch (addNewsItemCondition)
+{
+    case 0:
+        <div class="addCondition_0">
+            Не все поля заполнены!
+        </div>
+        break;
+    case 1:
+        <div class="addCondition_1">
+            Новость с таким названием уже присутсвует в базе!
+        </div>
+        break;
+    case 2:
+        <div class="addCondition_2">
+            Добавление новости прошло успешно!
+        </div>
+        break;
+}
+
+@if (newsItemId == "newNewsItem")
+{
+    <h1>
+        Введите заголовок новости<input @bind="newNewsItemTitle" />
+    </h1>
+    <h6>
+        @curNewsItem.ReleaseDateTime
+    </h6>
+    <h6>
+        Введите текст новости <textarea cols="10" rows="15" @bind=" newNewsItemContent" />
+    </h6>
+    <h3>
+        <button class="button1" @onclick="AddNewsItem">
+            Добавить новость
+        </button>
+    </h3>
+}
+
+else
+{
+    @if (UserExists())
+    {
+        @if (curUser.IsAdmin)
+        {
+            <h1>
+                <button class="admin_button" @onclick="ChangeNewsItemTitle"> Изменить заголовк новости</button>
+                <input @bind="newNewsItemTitle" />
+            </h1>
+            <h6>
+                @curNewsItem.ReleaseDateTime
+            </h6>
+            <h6>
+                <button class="admin_button" @onclick="ChangeNewsItemTitle"> Изменить текст новости</button>
+                <textarea cols="10" rows="15" @bind=" newNewsItemContent" />
+            </h6>
+        }
+        else
+        {
+            <h1>
+                @curNewsItem.NewsItemTitle
+            </h1>
+            <h6>
+                @curNewsItem.ReleaseDateTime
+            </h6>
+            <h5>
+                @curNewsItem.NewsItemContent
+            </h5>
+        }
+    }
+    else
+    {
+        <h1>
+            @curNewsItem.NewsItemTitle
+        </h1>
+        <h6>
+            @curNewsItem.ReleaseDateTime
+        </h6>
+        <h5>
+            @curNewsItem.NewsItemContent
+        </h5>
+    }
+}
+
+@code {
+    [Parameter] public string newsItemId { get; set; }
+    User curUser;
+    NewsItem curNewsItem;
+    IEnumerable<User> users = new List<User>();
+    string newNewsItemTitle;
+    string newNewsItemContent;
+    byte addNewsItemCondition = 255;
+
+    protected override void OnInitialized()
+    {
+        users = repository.GetAllUsers();
+        if (newsItemId == "newNewsItem")
+        {
+            newNewsItemTitle = string.Empty;
+            newNewsItemContent = "Текст новости отсутсвует.";
+            curNewsItem = new NewsItem()
+            {
+                NewsItemContent = newNewsItemContent,
+                NewsItemTitle = newNewsItemTitle,
+                ReleaseDateTime = DateTime.Now
+            };
+        }
+        else
+        {
+            curNewsItem = repository.GetAllNews().Where(n => n.NewsItemId == int.Parse(newsItemId)).First();
+            if (UserExists())
+                if (curUser.IsAdmin)
+                {
+                    newNewsItemTitle = curNewsItem.NewsItemTitle;
+                    newNewsItemContent = curNewsItem.NewsItemContent;
+                }
+        }
+    }
+
+    void AddNewsItem()
+    {
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle) || string.IsNullOrEmpty(newNewsItemContent) || string.IsNullOrWhiteSpace(newNewsItemContent) ||
+            newNewsItemContent == "Текст новости отсутсвует.")
+        {
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            foreach (var item in repository.GetAllNews())
+            {
+                if (item.NewsItemTitle == newNewsItemTitle)
+                {
+                    addNewsItemCondition = 1;
+                    return;
+                }
+            }
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemTitle = newNewsItemTitle;
+            curNewsItem.NewsItemContent = newNewsItemContent;
+            repository.AddNewsItem(curNewsItem);
+        }
+    }
+
+    private bool UserExists()
+    {
+        if (!string.IsNullOrWhiteSpace(Service.userName) && !string.IsNullOrWhiteSpace(Service.password) &&
+            !string.IsNullOrEmpty(Service.userName) && !string.IsNullOrEmpty(Service.password))
+            for (int i = 0; i < users.Count(); i++)
+            {
+                if (users.ElementAt(i).L0gin == Service.userName && users.ElementAt(i).Passwrd == Service.password)
+                {
+                    curUser = users.ElementAt(i);
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    void ChangeNewsItemTitle()
+    {
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle))
+        {
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            foreach (var item in repository.GetAllNews())
+            {
+                if (item.NewsItemTitle == newNewsItemTitle)
+                {
+                    addNewsItemCondition = 1;
+                    return;
+                }
+            }
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemTitle = newNewsItemTitle;
+            repository.ChangeNewsItem(curNewsItem);
+        }
+    }
+
+    void ChangeNewsItemContent()
+    {
+        if (string.IsNullOrEmpty(newNewsItemTitle) || string.IsNullOrWhiteSpace(newNewsItemTitle))
+        {
+            addNewsItemCondition = 0;
+        }
+        else
+        {
+            addNewsItemCondition = 2;
+            curNewsItem.NewsItemContent = newNewsItemContent;
+            repository.ChangeNewsItem(curNewsItem);
+        }
+    }
+}

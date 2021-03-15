@@ -1,31 +1,264 @@
-﻿@inject MySiteServer.Data.Repository.IRepository repository;
+﻿@inject NavigationManager NavigationManager;
+@inject MySiteServer.Data.Repository.IRepository repository;
+@inherits IndexBase;
+@using System.Text;
+@using System.IO;
 
 @page "/goods"
-<h3>Goods</h3>
-    @foreach (var item in goods)
+
+@if (!canIAddTheGoods)
+{
+    <div class="addCondition_0">
+        Желаемое количество товара отсутствует на складе.
+    </div>
+}
+<table border="0" cellspacing="100">
+    @for (int i = 0; i < (goods.Count() / 5) + 1; i++)
     {
-        <tbody>
-            <tr>
+    <tr>
+        @for (int k = i * 5; k < ((i*5) + 5 < goods.Count()?(i+1)*5:goods.Count()); k++)
+        {
+            var j = k;
+            if (goods.ElementAt(j).GoodPrice >= filters.minPrice && goods.ElementAt(j).GoodPrice <= filters.maxPrice &&
+                filters.brands.Contains(producers.ElementAt(goods.ElementAt(j).GoodProducerId - 1).ProducerName))
+            {
                 <td>
-                    <div>
-                        <p>
-                            Айди - @item.GoodId, Товар - @item.GoodName, Цена - @item.GoodPrice, Производитель - @item.GoodProducerId, Кол-во на складе - @item.GoodStackAmount
-                            <h1><img src="~/css/Images/@item.PathToGoodPicture"  /> </h1>
-                        </p>
-                    </div>
+                    <h6>
+                        <img src="/Images/@imgFiles[j]" width="200" height="200" />
+                    </h6>
+                    <a href="goodInfo/@j">
+                        @goods.ElementAt(j).GoodName
+                    </a>
+                    <a href="prodInfo/@j">
+                        @producers.ElementAt(@goods.ElementAt(j).GoodProducerId - 1).ProducerName
+                    </a>
+                    <h6>
+                    </h6>
+                    <h6> Цена - @goods.ElementAt(j).GoodPrice </h6>
+                    @if (goods.ElementAt(j).GoodStackAmount > 0)
+                    {
+                        <h6> Есть в наличии (@goods.ElementAt(j).GoodStackAmount)</h6>
+                    }
+                    else
+                    {
+                        <h6> Нет в наличии</h6>
+                    }
+
+                    @if (user != null)
+                    {
+                        @if (!user.IsAdmin)
+                        {
+                            <h6>
+                                <button class="button1" @onclick="() => AddGoodToCart(j)"> Добавить в корзину </button>
+
+                                <input class="my_little_input" @bind="@inputValues[j]" /> <h5>В корзине - @ShowGoodAmount(j)</h5>
+                            </h6>
+                        }
+                    }
                 </td>
-            </tr>
-        </tbody>
+            }
+        }
+    </tr>
+    }
+</table>
+<p>
+    <div class="filters_style">
+        <h4>
+            Настройте диапозон цен на товары:
+        </h4>
+        <h6>
+            ОТ <input class="my_little_input_1" @bind="filters.minPrice" /> ДО <input class="my_little_input_1" @bind="filters.maxPrice" />
+        </h6>
+        @for(int i = 0; i < producers.Count();i++)
+        {
+            int j = i;
+    <h6>
+        <input @bind="isChecked[j]" @onclick="() => AddOrRemoveBrand(j, producers.ElementAt(j).ProducerName)" type="checkbox" />@producers.ElementAt(j).ProducerName
+    </h6>
+        }
+    <h6>
+        <button @onclick="ResetFilters" class="admin_button"> Сбросить фильтры</button>
+    </h6>
+    </div>
+</p>
+@if (user != null)
+    @if (user.IsAdmin)
+    {
+<h6>
+    <form action="goodInfo/newPage">
+        <button class="add_good_buttons_style"> Добавить товар</button>
+    </form>
+</h6>
+<h6>
+    <form action="goodInfo/newProducer">
+        <button class="add_producer_buttons_style"> Добавить производителя</button>
+    </form>
+</h6>
     }
 
-
     @code {
+        private User user;
         private IEnumerable<Good> goods = new List<Good>();
+        private IEnumerable<Producer> producers = new List<Producer>();
+        private List<uint> inputValues;
+        private List<string> imgFiles;
+        bool canIAddTheGoods;
+        (uint minPrice, uint maxPrice, List<string> brands) filters;
+        uint defaultMaxPrice = 0;
+        List<bool> isChecked;
 
         protected override void OnInitialized()
         {
-            goods = repository.GetAllGoods();   
+            goods = repository.GetAllGoods();
+            if(defaultMaxPrice == 0)
+                goods.ToList().ForEach((good) => { if (good.GoodPrice > defaultMaxPrice) defaultMaxPrice = (uint)good.GoodPrice; });
+            producers = repository.GetAllProducers();
+            ResetFilters();
+            imgFiles = new List<string>();
+            canIAddTheGoods = true;
+            foreach (var item in new DirectoryInfo("./wwwroot/Images").GetFiles())
+            {
+                imgFiles.Add(item.Name);
+            }
+            if (!string.IsNullOrEmpty(Service.userName) && !string.IsNullOrWhiteSpace(Service.password))
+                foreach (User u in repository.GetAllUsers())
+                    if (u.L0gin == Service.userName && u.Passwrd == Service.password)
+                        user = u;
+            inputValues = new List<uint>();
+            for (int i = 0; i < goods.Count(); i++)
+            {
+                inputValues.Add(1);
+            }
         }
 
+        bool IsChecked(string value)
+        {
+            return filters.brands.Contains(value);
+        }
 
+        private uint ShowGoodAmount(int goodNum)
+        {
+            if (user.UserCart != null)
+            {
+                uint result = 0;
+                foreach (var item in user.UserCart.Split())
+                {
+                    string s = goodNum.ToString() + "*";
+                    string c;
+                    if (item.Contains(s))
+                    {
+                        c = item.Substring(s.Length, item.Length - s.Length);
+                        uint.TryParse(c, out result);
+                        return result;
+                    }
+                }
+                return 0;
+            }
+            else
+                return 0;
+        }
+
+        private void RemoveGoodFromCart(int goodNum)
+        {
+            if (!string.IsNullOrEmpty(user.UserCart))
+            {
+                string s = (goodNum.ToString() + '*').ToString();
+                if (user.UserCart.Contains(s))
+                {
+                    StringBuilder result = new StringBuilder();
+                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                    {
+                        if (str.Contains(s))
+                        {
+                            int newValue = int.Parse(str.Substring(s.Length, str.Length - s.Length)) - (int)inputValues[goodNum];
+                            if (newValue > 0)
+                                str = str.Substring(0, s.Length) + newValue.ToString();
+                        }
+
+                        result.Append(str + " ");
+                    }));
+                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                    repository.UserInfoChanged(user);
+                }
+            }
+        }
+
+        private void AddGoodToCart(int goodNum)
+        {
+            if (!string.IsNullOrEmpty(user.UserCart))
+            {
+                string s = goodNum.ToString() + "*";
+                if (user.UserCart.Contains(s))
+                {
+                    StringBuilder result = new StringBuilder();
+                    user.UserCart.Split().Cast<string>().ToList().ForEach(new Action<string>((str) =>
+                    {
+                        if (str.Contains(s))
+                            if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] - int.Parse(str.Substring(s.Length, str.Length - s.Length)) >= 0)
+                                str = str.Substring(0, s.Length) + (int.Parse(str.Substring(s.Length, str.Length - s.Length)) + inputValues[goodNum]).ToString();
+                            else
+                                canIAddTheGoods = false;
+                        result.Append(str + " ");
+                    }));
+                    user.UserCart = result.Remove(result.Length - 1, 1).ToString();
+                }
+                else
+                    if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] >= 0)
+                    user.UserCart = (new StringBuilder(user.UserCart).Append(' ' + goodNum.ToString() + '*' + inputValues[goodNum])).ToString();
+                else
+                    canIAddTheGoods = false;
+
+            }
+            else
+                if (goods.ElementAt(goodNum).GoodStackAmount - inputValues[goodNum] >= 0)
+                user.UserCart = (goodNum.ToString() + '*' + inputValues[goodNum]).ToString();
+            else
+                canIAddTheGoods = false;
+            repository.UserInfoChanged(user);
+        }
+
+        public string ImgNum(int i)
+        {
+            return i.ToString() + ".jpg";
+        }
+
+        void AddOrRemoveBrand(int index, string producerName)
+        {
+            if (filters.brands.Contains(producerName))
+            {
+                filters.brands.Remove(producerName);
+                isChecked[index] = false;
+            }
+            else
+            {
+                filters.brands.Add(producerName);
+                isChecked[index] = true;
+            } }
+
+        void SetMaxPrice(ChangeEventArgs args)
+        {
+            uint newMaxValue = uint.Parse(args.Value.ToString());
+            if (newMaxValue > 0 && newMaxValue < filters.maxPrice)
+                filters.maxPrice = newMaxValue;
+        }
+
+        void SetMinPrice(ChangeEventArgs args)
+        {
+            uint newMinValue = uint.Parse(args.Value.ToString());
+            if (newMinValue > 0 && newMinValue < filters.maxPrice)
+                filters.minPrice = newMinValue;
+        }
+
+        void ResetFilters()
+        {
+            filters.minPrice = 0;
+            filters.maxPrice = defaultMaxPrice;
+            filters.brands = new List<string>();
+            isChecked = new List<bool>();
+            foreach (var item in producers)
+            {
+                filters.brands.Add(item.ProducerName);
+                isChecked.Add(true);
+            }
+        }
     }

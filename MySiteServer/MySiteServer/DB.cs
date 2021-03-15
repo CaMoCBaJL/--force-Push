@@ -10,6 +10,16 @@ namespace MySiteServer
     {
         public DB(DbContextOptions<DB> options) : base(options) { }
         public DbSet<Good> Goods { get; set; }
+        public DbSet<Producer> Producers { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<NewsItem> News { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().ToTable("UserInfo");
+            modelBuilder.Entity<Good>().ToTable("Goods");
+            modelBuilder.Entity<Producer>().ToTable("Producer");
+            modelBuilder.Entity<NewsItem>().ToTable("News");
+        }
 
     }
 }

@@ -11,8 +11,7 @@ namespace MySiteServer
         public string GoodName { get; set; }
         public int GoodProducerId { get; set; }
         public int GoodStackAmount { get; set; }
-        public string PathToGoodPicture { get; set; }
         public int GoodPrice { get; set; }
-
+        public string GoodInfo { get; set; }
     }
 }

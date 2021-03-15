@@ -8,10 +8,141 @@ a, .btn-link {
     color: #0366d6;
 }
 
+.big_h{
+    height:100px;
+}
+
+.main_page{
+    font-family:'Times New Roman';
+    font-size:medium;
+    font-style:oblique;
+}
+
+.filters_style{
+    position : fixed;
+    top : 80px;
+    right:50px;
+}
+
+.site_info {
+    position: relative;
+    top: 800px;
+    height: 100px;
+}
+
+.user_cart_style {
+    font-family: Palatino, URW Palladio L, serif;
+    font-weight: normal;
+    line-height:normal;
+    height:50px;
+}
+
+.button1 {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+.button1:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.button0 {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+.button0:hover {
+        background-color: #B22222;
+        color: white;
+}
+
+.my_little_input{
+    width:50px;
+}
+
+.my_little_input_1 {
+    width: 70px;
+}
+
+.admin_button {
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+.admin_button:hover {
+    background-color: #8B008B;
+    color: white;
+}
+
+.add_good_buttons_style {
+    position: absolute; /* Относительное позиционирование */
+    background: white; /* Цвет фона */
+    top: 10px;
+    right: 10px;
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+    .add_good_buttons_style:hover {
+        background-color: #8B008B;
+        color: white;
+    }
+
+.add_producer_buttons_style {
+    position: absolute; /* Относительное позиционирование */
+    background: white; /* Цвет фона */
+    top: 40px;
+    right: 10px;
+    border-radius: 8px;
+    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    border: 1px solid #000000
+}
+
+    .add_producer_buttons_style:hover {
+        background-color: #8B008B;
+        color: white;
+    }
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+}
+
+.addCondition_0 {
+    border-radius: 3px;
+    border: 1px solid #000000;
+    position:center;
+    height: 30px;
+    background-color: #f44336;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.addCondition_1 {
+    border-radius: 3px;
+    border: 1px solid #000000;
+    position: center;
+    height: 30px;
+    background-color: #FFD700;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.addCondition_2 {
+    border-radius: 3px;
+    border: 1px solid #000000;
+    position: center;
+    height: 30px;
+    background-color: #4CAF50;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .content {
@@ -28,6 +159,11 @@ a, .btn-link {
 
 .validation-message {
     color: red;
+}
+
+.registration{
+    color:blue;
+    font-size:medium;
 }
 
 #blazor-error-ui {
@@ -48,3 +184,4 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
